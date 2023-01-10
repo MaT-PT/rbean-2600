@@ -27,7 +27,11 @@ def calc_totals(
             for skill in skills:
                 if verbose:
                     print(f"    - {skill.name}:", end=" ")
-                    print_color(f"{skill.value} / {skill.max_value}", get_color(skill.value / skill.max_value))
+                    if skill.max_value == 0:
+                        ratio = 0.0
+                    else:
+                        ratio = skill.value / skill.max_value
+                    print_color(f"{skill.value} / {skill.max_value}", get_color(ratio))
 
             total = Total(sum(s.value for s in skills), sum(s.max_value for s in skills))
             totals[unit_name][0].accumulate(total)

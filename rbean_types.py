@@ -30,6 +30,8 @@ class Total:
 
     @property
     def ratio(self) -> float:
+        if self.total_max == 0:
+            return 0.0
         return self.total / self.total_max
 
     @staticmethod
