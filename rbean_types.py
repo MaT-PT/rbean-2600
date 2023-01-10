@@ -1,0 +1,51 @@
+from dataclasses import dataclass
+from typing import Any
+
+from utils import get_color, print_color
+
+
+@dataclass
+class Unit:
+    name: str
+    url: str
+
+
+@dataclass
+class Project:
+    name: str
+    url: str
+
+
+@dataclass
+class Skill:
+    name: str
+    value: float
+    max_value: int
+
+
+@dataclass
+class Total:
+    total: float
+    total_max: int
+
+    @property
+    def ratio(self) -> float:
+        return self.total / self.total_max
+
+    @staticmethod
+    def zero() -> "Total":
+        return Total(0.0, 0)
+
+    def accumulate(self, o: "Total") -> "Total":
+        self.total += o.total
+        self.total_max += o.total_max
+        return self
+
+    def print_color(self, *args: Any, **kwargs: Any) -> None:
+        print_color(str(self), get_color(self.ratio), *args, **kwargs)
+
+    def __add__(self, o: "Total") -> "Total":
+        return Total(self.total + o.total, self.total_max + o.total_max)
+
+    def __str__(self) -> str:
+        return f"{self.total} / {self.total_max} ({self.ratio:.2%})"
