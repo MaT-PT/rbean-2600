@@ -1,4 +1,4 @@
-from typing import Any, Iterable
+from typing import Any, Iterable, Optional
 
 try:
     from colorama import init as colorama_init
@@ -21,9 +21,9 @@ def get_color(ratio: float) -> str:
 
 def print_color(
     text: str,
-    color: str | None = None,
-    on_color: str | None = None,
-    attrs: Iterable[str] | None = None,
+    color: Optional[str] = None,
+    on_color: Optional[str] = None,
+    attrs: Optional[Iterable[str]] = None,
     *args: Any,
     **kwargs: Any,
 ) -> None:

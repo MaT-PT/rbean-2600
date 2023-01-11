@@ -2,13 +2,14 @@
 
 import json
 from os import getenv
+from typing import List, Optional
 from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup, ResultSet, Tag
 from dotenv import load_dotenv
 
-from rbean_types import Project, Skill, Unit
+from rbean_types import Project, ProjectMap, Skill, Unit
 
 load_dotenv()
 
@@ -43,7 +44,7 @@ def do_login() -> None:
         raise RuntimeError("Login failed")
 
 
-def get_units() -> list[Unit]:
+def get_units() -> List[Unit]:
     if len(session.cookies) == 0:
         do_login()
 
@@ -70,7 +71,7 @@ def parse_project(project_card: Tag) -> Project:
     return Project(project_name, project_url)
 
 
-def get_projects(unit: Unit) -> list[Project]:
+def get_projects(unit: Unit) -> List[Project]:
     html = session.get(unit.url).text
     soup = BeautifulSoup(html, HTML_PARSER)
 
@@ -83,7 +84,7 @@ def get_projects(unit: Unit) -> list[Project]:
     return projects
 
 
-def get_latest_sentinel_url(project: Project) -> str | None:
+def get_latest_sentinel_url(project: Project) -> Optional[str]:
     html = session.get(project.url).text
     soup = BeautifulSoup(html, HTML_PARSER)
 
@@ -111,7 +112,7 @@ def parse_skill(skill_card: Tag) -> Skill:
     return Skill(skill_name.text.strip(), float(value), int(skill_max.text.strip().lstrip("/")))
 
 
-def get_sentinel_skills(sentinel_url: str) -> list[Skill]:
+def get_sentinel_skills(sentinel_url: str) -> List[Skill]:
     html = session.get(sentinel_url).text
     soup = BeautifulSoup(html, HTML_PARSER)
     skills_container = soup.find("div", id="review-skills")
@@ -122,7 +123,7 @@ def get_sentinel_skills(sentinel_url: str) -> list[Skill]:
 
 
 def main() -> None:
-    skills: dict[str, dict[str, list[Skill]]] = {}
+    skills: ProjectMap = {}
 
     do_login()
 

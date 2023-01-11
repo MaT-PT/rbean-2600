@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 from utils import get_color, print_color
 
@@ -51,3 +51,7 @@ class Total:
 
     def __str__(self) -> str:
         return f"{self.total} / {self.total_max} ({self.ratio:.2%})"
+
+
+ProjectMap = Dict[str, Dict[str, List[Skill]]]
+TotalMap = Dict[str, Tuple[Total, Dict[str, Total]]]

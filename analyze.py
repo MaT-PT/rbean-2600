@@ -3,14 +3,12 @@
 import json
 
 from get_rbean_skills import Skill
-from rbean_types import Total
+from rbean_types import ProjectMap, Total, TotalMap
 from utils import get_color, print_color
 
 
-def calc_totals(
-    data: dict[str, dict[str, list[Skill]]], verbose: bool = True
-) -> dict[str, tuple[Total, dict[str, Total]]]:
-    totals: dict[str, tuple[Total, dict[str, Total]]] = {}
+def calc_totals(data: ProjectMap, verbose: bool = True) -> TotalMap:
+    totals: TotalMap = {}
 
     for unit_name, projects in data.items():
         if verbose:
@@ -43,7 +41,7 @@ def calc_totals(
 
 def main() -> None:
     with open("skills.json", "r") as f:
-        data: dict[str, dict[str, list[Skill]]] = json.load(f, object_hook=lambda o: Skill(**o) if "value" in o else o)
+        data: ProjectMap = json.load(f, object_hook=lambda o: Skill(**o) if "value" in o else o)
 
     totals = calc_totals(data)
 
