@@ -2,6 +2,8 @@
 
 Parse le RBean de 2600 pour récupérer les notes de chaque projet et afficher des stats.
 
+### **_Requiert Python 3.10+._**
+
 **ATTENTION**: Le script ne peut pas calculer les notes des projets pour lesquels aucune moulinette n’a été exécutée.
 
 ## Installation des dépendances
