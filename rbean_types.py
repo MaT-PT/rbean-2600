@@ -64,3 +64,4 @@ class Total:
 ProjectMap = Dict[str, Dict[str, List[Skill]]]
 TotalMap = Dict[str, Tuple[Total, Dict[str, Total]]]
 SkillTotals = Dict[str, Total]
+ProjectUnitCouple = Tuple[Project, Unit]

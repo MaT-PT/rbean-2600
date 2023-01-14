@@ -2,15 +2,16 @@
 
 import json
 from collections import defaultdict
-from typing import Dict
+from typing import Dict, List, Tuple
 
 from get_rbean_skills import Skill
 from rbean_types import ProjectMap, SkillTotals, Total, TotalMap
 from utils import get_color, print_color
 
 
-def calc_totals(data: ProjectMap, verbose: bool = True) -> TotalMap:
+def calc_totals(data: ProjectMap, verbose: bool = True) -> Tuple[TotalMap, List[Tuple[str, str]]]:
     totals: TotalMap = {}
+    projects_without_sentinel: List[Tuple[str, str]] = []
 
     for unit_name, projects in data.items():
         if verbose:
@@ -29,6 +30,7 @@ def calc_totals(data: ProjectMap, verbose: bool = True) -> TotalMap:
                     print(f"    - {skill.name}:", end=" ")
                     if skill.max_value == 0:
                         ratio = 0.0
+                        projects_without_sentinel.append((project_name, unit_name))
                     else:
                         ratio = skill.value / skill.max_value
                     print_color(f"{skill.value} / {skill.max_value}", get_color(ratio))
@@ -38,7 +40,7 @@ def calc_totals(data: ProjectMap, verbose: bool = True) -> TotalMap:
             totals[unit_name][1][project_name] = total
             print()
 
-    return totals
+    return totals, projects_without_sentinel
 
 
 def calc_skill_totals(data: ProjectMap) -> Dict[str, SkillTotals]:
@@ -62,7 +64,7 @@ def main() -> None:
     with open("skills.json", "r") as f:
         data: ProjectMap = json.load(f, object_hook=lambda o: Skill(**o) if "value" in o else o)
 
-    totals = calc_totals(data)
+    totals, projects_without_sentinels = calc_totals(data, verbose=True)
 
     print("=" * 50)
     print()
@@ -94,6 +96,20 @@ def main() -> None:
             print_color(skill_name, "light_blue", end=" ")
             print_color("=>", end=" ")
             total.print_color()
+        print()
+
+    if len(projects_without_sentinels) > 0:
+        print("=" * 50)
+        print()
+        print_color("Warning! Projects without sentinel / Attention ! Projets sans moulinette :", "red", attrs=["bold"])
+        print()
+
+        for project_name, unit_name in projects_without_sentinels:
+            print_color("  -", end=" ")
+            print_color(project_name, "light_blue", end=" ")
+            print_color("(", end="")
+            print_color(unit_name, "magenta", end="")
+            print_color(")")
         print()
 
 

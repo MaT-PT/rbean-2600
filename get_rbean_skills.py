@@ -2,14 +2,14 @@
 
 import json
 from os import getenv
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup, ResultSet, Tag
 from dotenv import load_dotenv
 
-from rbean_types import Project, ProjectMap, Skill, Unit
+from rbean_types import Project, ProjectMap, ProjectUnitCouple, Skill, Unit
 
 load_dotenv()
 
@@ -124,6 +124,7 @@ def get_sentinel_skills(sentinel_url: str) -> List[Skill]:
 
 def main() -> None:
     skills: ProjectMap = {}
+    projects_without_sentinel: List[ProjectUnitCouple] = []
 
     do_login()
 
@@ -142,6 +143,7 @@ def main() -> None:
             sentinel_url = get_latest_sentinel_url(project)
             if sentinel_url is None:
                 print("    - No sentinel")
+                projects_without_sentinel.append((project, unit))
                 continue
 
             sentinel_skills = get_sentinel_skills(sentinel_url)
@@ -149,7 +151,15 @@ def main() -> None:
                 skills[unit.name][project.name].append(skill)
                 print(f"    - {skill.name}: {skill.value} / {skill.max_value}")
             print()
-        print("=" * 40)
+        print("=" * 50)
+
+    if len(projects_without_sentinel) > 0:
+        print()
+        print("Warning! Projects without sentinel / Attention ! Projets sans moulinette:")
+        print()
+
+        for project, unit in projects_without_sentinel:
+            print(f"  - {project.name} ({unit.name})")
 
     with open("skills.json", "w") as f:
         json.dump(skills, f, indent=2, default=lambda o: o.__dict__)
