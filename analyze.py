@@ -25,12 +25,17 @@ def calc_totals(data: ProjectMap, verbose: bool = True) -> Tuple[TotalMap, List[
             if verbose:
                 print_color("  - Project:", "blue", attrs=["bold"], end=" ")
                 print_color(project_name, attrs=["bold"])
+
+            if len(skills) == 0:
+                projects_without_sentinel.append((project_name, unit_name))
+                if verbose:
+                    print("      No sentinel!", "red")
+
             for skill in skills:
                 if verbose:
                     print(f"    - {skill.name}:", end=" ")
                     if skill.max_value == 0:
                         ratio = 0.0
-                        projects_without_sentinel.append((project_name, unit_name))
                     else:
                         ratio = skill.value / skill.max_value
                     print_color(f"{skill.value} / {skill.max_value}", get_color(ratio))
