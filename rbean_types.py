@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Union
 
 from utils import get_color, print_color
 
@@ -38,7 +38,12 @@ class Total:
     def zero() -> "Total":
         return Total(0.0, 0)
 
-    def accumulate(self, o: "Total") -> "Total":
+    def accumulate(self, o: "Union[Total, int]") -> "Total":
+        if isinstance(o, int):
+            self.total += o
+            self.total_max += o
+            return self
+
         self.total += o.total
         self.total_max += o.total_max
         return self
@@ -46,7 +51,10 @@ class Total:
     def print_color(self, *args: Any, **kwargs: Any) -> None:
         print_color(str(self), get_color(self.ratio), *args, **kwargs)
 
-    def __add__(self, o: "Total") -> "Total":
+    def __add__(self, o: "Union[Total, int]") -> "Total":
+        if isinstance(o, int):
+            return Total(self.total + o, self.total_max + o)
+
         return Total(self.total + o.total, self.total_max + o.total_max)
 
     def __str__(self) -> str:
@@ -55,3 +63,4 @@ class Total:
 
 ProjectMap = Dict[str, Dict[str, List[Skill]]]
 TotalMap = Dict[str, Tuple[Total, Dict[str, Total]]]
+SkillTotals = Dict[str, Total]

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 import json
+from collections import defaultdict
+from typing import Dict
 
 from get_rbean_skills import Skill
-from rbean_types import ProjectMap, Total, TotalMap
+from rbean_types import ProjectMap, SkillTotals, Total, TotalMap
 from utils import get_color, print_color
 
 
@@ -39,6 +41,23 @@ def calc_totals(data: ProjectMap, verbose: bool = True) -> TotalMap:
     return totals
 
 
+def calc_skill_totals(data: ProjectMap) -> Dict[str, SkillTotals]:
+    skill_totals: Dict[str, SkillTotals] = defaultdict(lambda: defaultdict(Total.zero))
+
+    for unit_name, projects in data.items():
+        unit_name_parts = unit_name.lower().split(":")
+        if len(unit_name_parts) > 1:
+            unit_prefix = unit_name_parts[0]
+        else:
+            unit_prefix = unit_name
+
+        for project_name, skills in projects.items():
+            for skill in skills:
+                skill_totals[unit_prefix][skill.name.replace("’", "'")].accumulate(Total(skill.value, skill.max_value))
+
+    return skill_totals
+
+
 def main() -> None:
     with open("skills.json", "r") as f:
         data: ProjectMap = json.load(f, object_hook=lambda o: Skill(**o) if "value" in o else o)
@@ -57,6 +76,23 @@ def main() -> None:
             print_color("  >", attrs=["bold"], end=" ")
             print_color(project_name, "blue", attrs=["bold"], end=" ")
             print_color("=>", attrs=["bold"], end=" ")
+            total.print_color()
+        print()
+
+    print("=" * 50)
+    print()
+
+    skill_totals = calc_skill_totals(data)
+
+    for unit_prefix, skill_total in sorted(skill_totals.items()):
+        print_color("===", attrs=["bold"], end=" ")
+        print_color(unit_prefix.capitalize(), "magenta", attrs=["bold"], end=" ")
+        print_color("===", attrs=["bold"])
+
+        for skill_name, total in sorted(skill_total.items()):
+            print_color("  -", end=" ")
+            print_color(skill_name, "light_blue", end=" ")
+            print_color("=>", end=" ")
             total.print_color()
         print()
 
