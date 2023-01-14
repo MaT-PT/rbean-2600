@@ -92,15 +92,28 @@ def main() -> None:
     skill_totals = calc_skill_totals(data)
 
     for unit_prefix, skill_total in sorted(skill_totals.items()):
+        ratios: List[float] = []
+
         print_color("===", attrs=["bold"], end=" ")
         print_color(unit_prefix.capitalize(), "magenta", attrs=["bold"], end=" ")
         print_color("===", attrs=["bold"])
 
         for skill_name, total in sorted(skill_total.items()):
+            ratios.append(total.ratio)
+
             print_color("  -", end=" ")
             print_color(skill_name, "light_blue", end=" ")
             print_color("=>", end=" ")
             total.print_color()
+        print()
+
+        nb_ratios = len(ratios)
+        over_50 = len([ratio for ratio in ratios if ratio >= 0.5])
+        over_80 = len([ratio for ratio in ratios if ratio >= 0.8])
+        print_color(f"Over 50%:", attrs=["bold"], end=" ")
+        print_color(f"{over_50} / {nb_ratios} ({over_50 / nb_ratios:.2%})", get_color(over_50 / nb_ratios))
+        print_color(f"Over 80%:", attrs=["bold"], end=" ")
+        print_color(f"{over_80} / {nb_ratios} ({over_80 / nb_ratios:.2%})", get_color(over_80 / nb_ratios))
         print()
 
     if len(projects_without_sentinels) > 0:

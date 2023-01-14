@@ -11,7 +11,7 @@ except ModuleNotFoundError:
 
 
 def get_color(ratio: float) -> str:
-    if ratio >= 0.75:
+    if ratio >= 0.8:
         return "green"
     elif ratio >= 0.5:
         return "yellow"
