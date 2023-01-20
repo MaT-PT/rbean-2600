@@ -6,6 +6,8 @@ Parse le RBean de 2600 pour récupérer les notes de chaque projet et afficher d
 
 **ATTENTION**: Le script ne peut pas calculer les notes des projets pour lesquels aucune moulinette n’a été exécutée.
 
+Les résultats seront faussés s’il manque des moulinettes.
+
 ## Installation des dépendances
 
 ```bash
@@ -20,8 +22,8 @@ python3 -m pip install -Ur requirements.txt
 
 ```bash
 # .env
-LOGIN="<prenom.nom>@ecole2600.com"
-PASSWORD="<XXXX>"
+LOGIN="prenom.nom@ecole2600.com"
+PASSWORD="XXXX"
 ```
 
 ### Récupération des notes
